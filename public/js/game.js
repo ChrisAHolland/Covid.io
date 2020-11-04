@@ -23,33 +23,12 @@ function preload() {
   this.load.image("ship", "assets/spaceShips_001.png");
   this.load.image("otherPlayer", "assets/enemyBlack5.png");
   this.load.image("star", "assets/star_gold.png");
-  this.load.image("laser", "assets/star_gold.png");
-}
-
-function resetLaser(laser) {
-  laser.kill();
 }
 
 function create() {
   var self = this;
   this.socket = io();
   this.otherPlayers = this.physics.add.group();
-
-  this.lasers = this.add.group();
-  this.lasers.enableBody = true;
-  this.lasers.physicsBodyType = Phaser.Physics.ARCADE;
-
-  this.lasers.createMultiple(20, "laser");
-  this.lasers.callAll(
-    "events.onOutOfBounds.add",
-    "events.onOutOfBounds",
-    resetLaser
-  );
-  // Same as above, set the anchor of every sprite to 0.5, 1.0
-  this.lasers.callAll("anchor.setTo", "anchor", 0.5, 1.0);
-
-  // This will set 'checkWorldBounds' to true on all sprites in the group
-  this.lasers.setAll("checkWorldBounds", true);
 
   this.socket.on("currentPlayers", function (players) {
     Object.keys(players).forEach(function (id) {
