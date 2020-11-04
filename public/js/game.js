@@ -35,6 +35,22 @@ function create() {
   this.socket = io();
   this.otherPlayers = this.physics.add.group();
 
+  this.lasers = this.add.group();
+  this.lasers.enableBody = true;
+  this.lasers.physicsBodyType = Phaser.Physics.ARCADE;
+
+  this.lasers.createMultiple(20, "laser");
+  this.lasers.callAll(
+    "events.onOutOfBounds.add",
+    "events.onOutOfBounds",
+    resetLaser
+  );
+  // Same as above, set the anchor of every sprite to 0.5, 1.0
+  this.lasers.callAll("anchor.setTo", "anchor", 0.5, 1.0);
+
+  // This will set 'checkWorldBounds' to true on all sprites in the group
+  this.lasers.setAll("checkWorldBounds", true);
+
   this.socket.on("currentPlayers", function (players) {
     Object.keys(players).forEach(function (id) {
       if (players[id].playerId === self.socket.id) {
