@@ -20,9 +20,9 @@ var config = {
 var game = new Phaser.Game(config);
 
 function preload() {
-  this.load.image("ship", "assets/spaceShips_001.png");
-  this.load.image("otherPlayer", "assets/enemyBlack5.png");
-  this.load.image("star", "assets/star_gold.png");
+  this.load.image("doctor", "assets/doctor.png");
+  this.load.image("virus", "assets/virus.png");
+  this.load.image("target", "assets/target.png");
 }
 
 function create() {
@@ -69,26 +69,30 @@ function create() {
 
   this.cursors = this.input.keyboard.createCursorKeys();
 
-  this.blueScoreText = this.add.text(16, 16, "", {
+  this.doctorScoreText = this.add.text(16, 16, "", {
     fontSize: "32px",
-    fill: "#0000FF",
+    fill: "#1CDCFE",
   });
-  this.redScoreText = this.add.text(584, 16, "", {
+  this.virusScoreText = this.add.text(584, 16, "", {
     fontSize: "32px",
-    fill: "#FF0000",
+    fill: "#06EE45",
   });
 
   this.socket.on("scoreUpdate", function (scores) {
-    self.blueScoreText.setText("Blue: " + scores.blue);
-    self.redScoreText.setText("Red: " + scores.red);
+    self.doctorScoreText.setText("Doctors: " + scores.blue);
+    self.virusScoreText.setText("The Virus: " + scores.red);
   });
 
   this.socket.on("starLocation", function (starLocation) {
-    if (self.star) self.star.destroy();
-    self.star = self.physics.add.image(starLocation.x, starLocation.y, "star");
+    if (self.target) self.target.destroy();
+
+    self.target = self.physics.add
+      .image(starLocation.x, starLocation.y, "target")
+      .setDisplaySize(53, 53);
+
     self.physics.add.overlap(
       self.ship,
-      self.star,
+      self.target,
       function () {
         this.socket.emit("starCollected");
       },
@@ -99,14 +103,16 @@ function create() {
 }
 
 function addPlayer(self, playerInfo) {
-  self.ship = self.physics.add
-    .image(playerInfo.x, playerInfo.y, "ship")
-    .setOrigin(0.5, 0.5)
-    .setDisplaySize(53, 40);
   if (playerInfo.team === "blue") {
-    self.ship.setTint(0x0000ff);
+    self.ship = self.physics.add
+      .image(playerInfo.x, playerInfo.y, "doctor")
+      .setOrigin(0.5, 0.5)
+      .setDisplaySize(53, 53);
   } else {
-    self.ship.setTint(0xff0000);
+    self.ship = self.physics.add
+      .image(playerInfo.x, playerInfo.y, "virus")
+      .setOrigin(0.5, 0.5)
+      .setDisplaySize(53, 53);
   }
   self.ship.setDrag(1800);
   self.ship.setAngularDrag(800);
@@ -114,24 +120,23 @@ function addPlayer(self, playerInfo) {
 }
 
 function addOtherPlayers(self, playerInfo) {
-  const otherPlayer = self.add
-    .sprite(playerInfo.x, playerInfo.y, "otherPlayer")
-    .setOrigin(0.5, 0.5)
-    .setDisplaySize(53, 40);
+  let otherPlayer;
   if (playerInfo.team === "blue") {
-    otherPlayer.setTint(0x0000ff);
+    otherPlayer = self.add
+      .sprite(playerInfo.x, playerInfo.y, "doctor")
+      .setOrigin(0.5, 0.5)
+      .setDisplaySize(53, 53);
   } else {
-    otherPlayer.setTint(0xff0000);
+    otherPlayer = self.add
+      .sprite(playerInfo.x, playerInfo.y, "virus")
+      .setOrigin(0.5, 0.5)
+      .setDisplaySize(53, 53);
   }
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
 }
 
 function update() {
-  if (this.input.activePointer.isDown) {
-    // move player along the x-axis at a rate this.speed pixels
-    console.log("ww");
-  }
   if (this.ship) {
     // emit player movement
     var x = this.ship.x;
