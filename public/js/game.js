@@ -161,31 +161,25 @@ function update() {
       y: this.ship.y,
       rotation: this.ship.rotation,
     };
-
+    
+    // Control left and right movement
     if (this.buttonA.isDown) {
-      this.ship.setAngularVelocity(-500);
+      this.ship.setVelocityX(-300);
     } else if (this.buttonD.isDown) {
-      this.ship.setAngularVelocity(500);
+      this.ship.setVelocityX(300);
     } else {
-      this.ship.setAngularVelocity(0);
+      this.ship.setVelocityX(0);
     }
 
+    // Control up and down movement
     if (this.buttonW.isDown) {
-      this.physics.velocityFromRotation(
-        this.ship.rotation + 1.5,
-        1000,
-        this.ship.body.acceleration
-      );
+      this.ship.setVelocityY(-300);
     } else if (this.buttonS.isDown) {
-      this.physics.velocityFromRotation(
-        this.ship.rotation - 1.5,
-        500,
-        this.ship.body.acceleration
-      );
+      this.ship.setVelocityY(300);
     } else {
-      this.ship.setAcceleration(0);
+      this.ship.setVelocityY(0);
     }
-
+    
     this.physics.world.wrap(this.ship, 5);
   }
 }
