@@ -1,4 +1,4 @@
-var config = {
+const config = {
   type: Phaser.AUTO,
   parent: "phaser-example",
   width: 1600,
@@ -17,7 +17,8 @@ var config = {
   },
 };
 
-var game = new Phaser.Game(config);
+const game = new Phaser.Game(config);
+const MAX_SIZE = 200;
 
 function preload() {
   this.load.image("doctor", "assets/doctor.png");
@@ -27,6 +28,8 @@ function preload() {
 
 function create() {
   var self = this;
+  this.player_width = 53;
+  this.player_height = 53;
   this.socket = io();
   this.otherPlayers = this.physics.add.group();
 
@@ -63,6 +66,7 @@ function create() {
       if (playerInfo.playerId === otherPlayer.playerId) {
         otherPlayer.setRotation(playerInfo.rotation);
         otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+        otherPlayer.setDisplaySize(playerInfo.player_height, playerInfo.player_width);
       }
     });
   });
@@ -79,22 +83,27 @@ function create() {
   });
 
   this.socket.on("scoreUpdate", function (scores) {
-    self.doctorScoreText.setText("Doctors: " + scores.blue);
-    self.virusScoreText.setText("The Virus: " + scores.red);
+    self.doctorScoreText.setText("Immunized: " + scores.doctor);
+    self.virusScoreText.setText("Infected: " + scores.virus);
   });
 
-  this.socket.on("starLocation", function (starLocation) {
+  this.socket.on("targetLocation", function (targetLocation) {
     if (self.target) self.target.destroy();
 
     self.target = self.physics.add
-      .image(starLocation.x, starLocation.y, "target")
+      .image(targetLocation.x, targetLocation.y, "target")
       .setDisplaySize(53, 53);
 
     self.physics.add.overlap(
       self.ship,
       self.target,
       function () {
-        this.socket.emit("starCollected");
+        this.socket.emit("targetCollected");
+        if (this.player_width < MAX_SIZE && this.player_height < MAX_SIZE) {
+          self.player_width = self.player_width + 10;
+          self.player_height = self.player_height + 10;
+          self.ship.setDisplaySize(this.player_height, this.player_width);
+        }
       },
       null,
       self
@@ -103,16 +112,16 @@ function create() {
 }
 
 function addPlayer(self, playerInfo) {
-  if (playerInfo.team === "blue") {
+  if (playerInfo.team === "doctor") {
     self.ship = self.physics.add
       .image(playerInfo.x, playerInfo.y, "doctor")
       .setOrigin(0.5, 0.5)
-      .setDisplaySize(53, 53);
+      .setDisplaySize(playerInfo.player_height, playerInfo.player_width);
   } else {
     self.ship = self.physics.add
       .image(playerInfo.x, playerInfo.y, "virus")
       .setOrigin(0.5, 0.5)
-      .setDisplaySize(53, 53);
+      .setDisplaySize(playerInfo.player_height, playerInfo.player_width);
   }
   self.ship.setDrag(1800);
   self.ship.setAngularDrag(800);
@@ -121,16 +130,16 @@ function addPlayer(self, playerInfo) {
 
 function addOtherPlayers(self, playerInfo) {
   let otherPlayer;
-  if (playerInfo.team === "blue") {
+  if (playerInfo.team === "doctor") {
     otherPlayer = self.add
       .sprite(playerInfo.x, playerInfo.y, "doctor")
       .setOrigin(0.5, 0.5)
-      .setDisplaySize(53, 53);
+      .setDisplaySize(playerInfo.player_height, playerInfo.player_width);
   } else {
     otherPlayer = self.add
       .sprite(playerInfo.x, playerInfo.y, "virus")
       .setOrigin(0.5, 0.5)
-      .setDisplaySize(53, 53);
+      .setDisplaySize(playerInfo.player_height, playerInfo.player_width);
   }
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
@@ -151,6 +160,8 @@ function update() {
       this.socket.emit("playerMovement", {
         x: this.ship.x,
         y: this.ship.y,
+        player_height: this.player_height,
+        player_width: this.player_width,
         rotation: this.ship.rotation,
       });
     }
