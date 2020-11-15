@@ -2,7 +2,7 @@ const config = {
   type: Phaser.AUTO,
   parent: "phaser-example",
   width: 1600,
-  height: 1200,
+  height: 920,
   physics: {
     default: "arcade",
     arcade: {
@@ -73,13 +73,42 @@ function create() {
 
   this.cursors = this.input.keyboard.createCursorKeys();
 
-  this.doctorScoreText = this.add.text(16, 16, "", {
+  this.doctorScoreText = this.add.text(800, 15, "", {
     fontSize: "32px",
     fill: "#1CDCFE",
   });
-  this.virusScoreText = this.add.text(584, 16, "", {
+  this.virusScoreText = this.add.text(550, 15, "", {
     fontSize: "32px",
     fill: "#06EE45",
+  });
+
+  this.timerText = this.add.text(1430, 15, "", {
+    fontSize: "32px",
+    fill: "#FFFFFF",
+  });
+
+  this.roundsWonHeaderText = this.add.text(5, 15, "Rounds won:", {
+    fontSize: "32px",
+    fill: "#FFFFFF",
+  });
+
+  this.roundsWonDoctorText = this.add.text(5, 75, "", {
+    fontSize: "32px",
+    fill: "#1CDCFE",
+  });
+
+  this.roundsWonVirusText = this.add.text(5, 45, "", {
+    fontSize: "32px",
+    fill: "#06EE45",
+  });
+
+  this.socket.on("roundUpdate", function(rounds){
+    self.roundsWonDoctorText.setText("Doctors: " + rounds.doctor);
+    self.roundsWonVirusText.setText("Virus: " + rounds.virus);
+  });
+
+  this.socket.on("clockUpdate", function(countdown){
+    self.timerText.setText("Time: " + countdown);
   });
 
   this.socket.on("scoreUpdate", function (scores) {
