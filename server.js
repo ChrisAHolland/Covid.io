@@ -8,7 +8,7 @@ var players = {};
 
 var target = {
   x: Math.floor(Math.random() * 1500) + 50,
-  y: Math.floor(Math.random() * 1100) + 50
+  y: Math.floor(Math.random() * 700) + 150
 };
 
 // current round scores
@@ -90,8 +90,8 @@ io.on("connection", function(socket) {
   // create a new player and add it to our players object
   players[socket.id] = {
     rotation: 0,
-    x: Math.floor(Math.random() * 1525) + 25,
-    y: Math.floor(Math.random() * 665) + 135,
+    x: Math.floor(Math.random() * 1500) + 50,
+    y: Math.floor(Math.random() * 700) + 150,
     player_height: 53,
     player_width: 53,
     playerId: socket.id,
@@ -144,7 +144,7 @@ io.on("connection", function(socket) {
       scores.doctor += 1;
     }
     target.x = Math.floor(Math.random() * 1500) + 50;
-    target.y = Math.floor(Math.random() * 1100) + 50;
+    target.y = Math.floor(Math.random() * 700) + 150;
     io.emit("targetLocation", target);
     io.emit("scoreUpdate", scores);
   });

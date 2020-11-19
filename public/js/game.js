@@ -5,7 +5,7 @@ import { playerMovement, onPlayerMovement } from "./playerMovement.js";
 import { createScore } from "./score.js";
 
 const canvasWidth = 1600;
-const canvasHeight = 1200;
+const canvasHeight = 900;
 let lastFire = 0;
 
 const config = {
