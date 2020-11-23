@@ -12,7 +12,7 @@ export function updateBullet(game, time) {
 
   //mouse click event
   const pointer = game.input.activePointer;
-  if (pointer.isDown) {
+  if (pointer.isDown && game.team === "virus") {
     bulletInfo.x = game.ship.x;
     bulletInfo.y = game.ship.y;
     bulletInfo.toX = pointer.x;

@@ -50,8 +50,8 @@ export function playerMovement(game) {
 }
 
 export function onPlayerMovement(game) {
-  game.socket.on("playerMoved", function(playerInfo) {
-    game.otherPlayers.getChildren().forEach(function(otherPlayer) {
+  game.socket.on("playerMoved", function (playerInfo) {
+    game.otherPlayers.getChildren().forEach(function (otherPlayer) {
       if (playerInfo.playerId === otherPlayer.playerId) {
         otherPlayer.setRotation(playerInfo.rotation);
         otherPlayer.setPosition(playerInfo.x, playerInfo.y);

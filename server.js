@@ -30,7 +30,7 @@ function Timer(fn, time) {
   var timerObject = setInterval(fn, time);
 
   // stop the timer
-  this.stop = function() {
+  this.stop = function () {
     if (timerObject) {
       clearInterval(timerObject);
       timerObject = null;
@@ -39,7 +39,7 @@ function Timer(fn, time) {
   };
 
   // start timer
-  this.start = function() {
+  this.start = function () {
     if (!timerObject) {
       this.stop();
       timerObject = setInterval(fn, time);
@@ -48,12 +48,12 @@ function Timer(fn, time) {
   };
 
   // reset round timer
-  this.reset = function() {
+  this.reset = function () {
     countdown = 20;
   };
 }
 
-var timer = new Timer(function() {
+var timer = new Timer(function () {
   countdown--;
 
   if (countdown < 0) {
@@ -81,11 +81,11 @@ var timer = new Timer(function() {
 
 app.use(express.static(__dirname + "/public"));
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
-io.on("connection", function(socket) {
+io.on("connection", function (socket) {
   console.log("a user connected");
   // create a new player and add it to our players object
   players[socket.id] = {
@@ -113,7 +113,7 @@ io.on("connection", function(socket) {
   socket.broadcast.emit("newPlayer", players[socket.id]);
 
   // when a player disconnects, remove them from our players object
-  socket.on("disconnect", function() {
+  socket.on("disconnect", function () {
     console.log("user disconnected");
     // remove this player from our players object
     delete players[socket.id];
@@ -122,7 +122,7 @@ io.on("connection", function(socket) {
   });
 
   // when a player moves, update the player data
-  socket.on("playerMovement", function(movementData) {
+  socket.on("playerMovement", function (movementData) {
     players[socket.id].x = movementData.x;
     players[socket.id].y = movementData.y;
     players[socket.id].player_width = movementData.player_width;
@@ -150,6 +150,6 @@ io.on("connection", function(socket) {
   });
 });
 
-server.listen(8081, function() {
+server.listen(8081, function () {
   console.log(`Listening on ${server.address().port}`);
 });
